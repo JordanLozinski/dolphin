@@ -18,39 +18,39 @@ public:
   SlippiPlaybackStatus();
   ~SlippiPlaybackStatus();
 
-  bool shouldJumpBack = false;
-  bool shouldJumpForward = false;
-  bool inSlippiPlayback = false;
-  volatile bool shouldRunThreads = false;
-  bool isHardFFW = false;
-  bool isSoftFFW = false;
-  bool origOCEnable = SConfig::GetInstance().m_OCEnable;
-  float origOCFactor = SConfig::GetInstance().m_OCFactor;
+  bool m_should_jump_back = false;
+  bool m_should_jump_forward = false;
+  bool m_in_slippi_playback = false;
+  volatile bool m_should_run_threads = false;
+  bool m_hard_ffw = false;
+  bool m_soft_ffw = false;
+  bool m_orig_oc_enable = SConfig::GetInstance().m_OCEnable;
+  float m_orig_oc_factor = SConfig::GetInstance().m_OCFactor;
 
-  s32 lastFFWFrame = INT_MIN;
-  s32 currentPlaybackFrame = INT_MIN;
-  s32 targetFrameNum = INT_MAX;
-  s32 lastFrame = Slippi::PLAYBACK_FIRST_SAVE;
+  s32 m_last_ffw_frame = INT_MIN;
+  s32 m_curr_playback_frame = INT_MIN;
+  s32 m_target_frame_num = INT_MAX;
+  s32 m_last_frame = Slippi::PLAYBACK_FIRST_SAVE;
 
-  std::thread m_savestateThread;
+  std::thread m_savestate_thread;
 
-  void startThreads(void);
-  void resetPlayback(void);
-  bool shouldFFWFrame(s32 frameIndex) const;
-  void prepareSlippiPlayback(s32& frameIndex);
-  void setHardFFW(bool enable);
-  void seekToFrame();
+  void StartThreads(void);
+  void ResetPlayback(void);
+  bool ShouldFFWFrame(s32 frame_index) const;
+  void PrepareSlippiPlayback(s32& frame_index);
+  void SetHardFFW(bool enable);
+  void SeekToFrame();
 
 private:
   void SavestateThread(void);
-  void loadState(s32 closestStateFrame);
-  void processInitialState();
-  void updateWatchSettingsStartEnd();
+  void LoadState(s32 closest_state_frame);
+  void ProcessInitialState();
+  void UpdateWatchSettingsStartEnd();
 
   std::unordered_map<int32_t, std::shared_future<std::string>>
-      futureDiffs;         // State diffs keyed by frameIndex, processed async
-  std::vector<u8> iState;  // The initial state
-  std::vector<u8> cState;  // The current (latest) state
+      m_future_diffs;               // State diffs keyed by frameIndex, processed async
+  std::vector<u8> m_initial_state;  // The initial state
+  std::vector<u8> m_curr_state;     // The current (latest) state
 
   open_vcdiff::VCDiffDecoder decoder;
   open_vcdiff::VCDiffEncoder* encoder = NULL;
