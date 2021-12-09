@@ -20,7 +20,7 @@
 #include "InputCommon/ControllerInterface/ControllerInterface.h"
 #include "InputCommon/ControllerInterface/Pipes/Pipes.h"
 
-bool g_needInputForFrame;
+bool g_need_input_for_frame;
 
 namespace ciface::Pipes
 {
@@ -224,7 +224,7 @@ bool PipeDevice::ParseCommand(const std::string& command)
     return false;
   if (tokens[0] == "FLUSH")
   {
-    g_needInputForFrame = false;
+    g_need_input_for_frame = false;
     return true;
   }
   if (tokens[0] == "PRESS" || tokens[0] == "RELEASE")
