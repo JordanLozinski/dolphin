@@ -349,7 +349,7 @@ std::vector<u8> uint32ToVector(u32 num)
   return std::vector<u8>({byte0, byte1, byte2, byte3});
 }
 
-void appendWordToBuffer(std::vector<u8>* buf, u32 word)
+void AppendWordToBuffer(std::vector<u8>* buf, u32 word)
 {
   auto wordVector = uint32ToVector(word);
   buf->insert(buf->end(), wordVector.begin(), wordVector.end());
@@ -360,8 +360,8 @@ std::vector<u8> GenerateGct()
   std::vector<u8> res;
 
   // Write header
-  appendWordToBuffer(&res, 0x00d0c0de);
-  appendWordToBuffer(&res, 0x00d0c0de);
+  AppendWordToBuffer(&res, 0x00d0c0de);
+  AppendWordToBuffer(&res, 0x00d0c0de);
 
   std::lock_guard<std::mutex> lk(s_active_codes_lock);
 
@@ -372,15 +372,15 @@ std::vector<u8> GenerateGct()
     {
       for (const GeckoCode::Code& code : active_code.codes)
       {
-        appendWordToBuffer(&res, code.address);
-        appendWordToBuffer(&res, code.data);
+        AppendWordToBuffer(&res, code.address);
+        AppendWordToBuffer(&res, code.data);
       }
     }
   }
 
   // Write footer
-  appendWordToBuffer(&res, 0xff000000);
-  appendWordToBuffer(&res, 0x00000000);
+  AppendWordToBuffer(&res, 0xff000000);
+  AppendWordToBuffer(&res, 0x00000000);
 
   return res;
 }
