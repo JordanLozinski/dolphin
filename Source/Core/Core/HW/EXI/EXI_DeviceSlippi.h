@@ -91,7 +91,7 @@ private:
     FRAME_RESP_FASTFORWARD = 3,
   };
 
-  std::unordered_map<u8, u32> payloadSizes = {
+  std::unordered_map<u8, u32> payload_sizes = {
       // The actual size of this command will be sent in one byte
       // after the command is received. The other receive command IDs
       // and sizes will be received immediately following
@@ -137,23 +137,23 @@ private:
   };
 
   // .slp File creation stuff
-  u32 writtenByteCount = 0;
+  u32 m_written_byte_count = 0;
 
   // vars for metadata generation
-  time_t gameStartTime;
-  s32 lastFrame;
-  std::unordered_map<u8, std::unordered_map<u8, u32>> characterUsage;
+  time_t m_game_start_time;
+  s32 m_last_frame;
+  std::unordered_map<u8, std::unordered_map<u8, u32>> character_usage;
 
-  void updateMetadataFields(u8* payload, u32 length);
-  void configureCommands(u8* payload, u8 length);
-  void writeToFileAsync(u8* payload, u32 length, std::string fileOption);
-  void writeToFile(std::unique_ptr<WriteMessage> msg);
-  std::vector<u8> generateMetadata();
-  void createNewFile();
-  void closeFile();
-  std::string generateFileName();
-  bool checkFrameFullyFetched(s32 frameIndex);
-  // bool shouldFFWFrame(s32 frameIndex);
+  void UpdateMetadataFields(u8* payload, u32 length);
+  void ConfigureCommands(u8* payload, u8 length);
+  void WriteToFileAsync(u8* payload, u32 length, std::string file_option);
+  void WriteToFile(std::unique_ptr<WriteMessage> msg);
+  std::vector<u8> GenerateMetadata();
+  void CreateNewFile();
+  void CloseFile();
+  std::string GenerateFileName();
+  bool CheckFrameFullyFetched(s32 frameIndex);
+  // bool ShouldFFWFrame(s32 frameIndex);
 
   // std::ofstream log;
 
@@ -161,92 +161,92 @@ private:
   std::vector<u8> m_payload;
 
   // online play stuff
-  u16 getRandomStage();
-  bool isDisconnected();
-  void handleOnlineInputs(u8* payload);
-  void prepareOpponentInputs(u8* payload);
-  void handleSendInputs(u8* payload);
-  void handleCaptureSavestate(u8* payload);
-  void handleLoadSavestate(u8* payload);
-  void startFindMatch(u8* payload);
-  void prepareOnlineMatchState();
-  void setMatchSelections(u8* payload);
-  bool shouldSkipOnlineFrame(s32 frame);
-  void handleLogInRequest();
-  void handleLogOutRequest();
-  void handleUpdateAppRequest();
-  void prepareOnlineStatus();
-  void handleConnectionCleanup();
-  void prepareNewSeed();
-  void handleReportGame(u8* payload);
+  u16 GetRandomStage();
+  bool IsDisconnected();
+  void HandleOnlineInputs(u8* payload);
+  void PrepareOpponentInputs(u8* payload);
+  void HandleSendInputs(u8* payload);
+  void HandleCaptureSavestate(u8* payload);
+  void HandleLoadSavestate(u8* payload);
+  void StartFindMatch(u8* payload);
+  void PrepareOnlineMatchState();
+  void SetMatchSelections(u8* payload);
+  bool ShouldSkipOnlineFrame(s32 frame);
+  void HandleLogInRequest();
+  void HandleLogOutRequest();
+  void HandleUpdateAppRequest();
+  void PrepareOnlineStatus();
+  void HandleConnectionCleanup();
+  void PrepareNewSeed();
+  void HandleReportGame(u8* payload);
 
   // replay playback stuff
-  void prepareGameInfo(u8* payload);
-  void prepareGeckoList();
-  void prepareCharacterFrameData(Slippi::FrameData* frame, u8 port, u8 isFollower);
-  void prepareFrameData(u8* payload);
-  void prepareIsStockSteal(u8* payload);
-  void prepareIsFileReady();
+  void PrepareGameInfo(u8* payload);
+  void PrepareGeckoList();
+  void PrepareCharacterFrameData(Slippi::FrameData* frame, u8 port, u8 is_follower);
+  void PrepareFrameData(u8* payload);
+  void PrepareIsStockSteal(u8* payload);
+  void PrepareIsFileReady();
 
   // misc stuff
-  void handleChatMessage(u8* payload);
-  void logMessageFromGame(u8* payload);
-  void prepareFileLength(u8* payload);
-  void prepareFileLoad(u8* payload);
-  void prepareGctLength();
-  void prepareGctLoad(u8* payload);
-  int getCharColor(u8 charId, u8 teamId);
+  void HandleChatMessage(u8* payload);
+  void LogMessageFromGame(u8* payload);
+  void PrepareFileLength(u8* payload);
+  void PrepareFileLoad(u8* payload);
+  void PrepareGctLength();
+  void PrepareGctLoad(u8* payload);
+  int GetCharColor(u8 char_id, u8 team_id);
 
   void FileWriteThread(void);
 
-  std::queue<std::unique_ptr<WriteMessage>> fileWriteQueue;
-  bool writeThreadRunning = false;
-  std::thread m_fileWriteThread;
+  std::queue<std::unique_ptr<WriteMessage>> m_file_write_queue;
+  bool m_write_thread_running = false;
+  std::thread m_file_write_thread;
 
-  std::unordered_map<u8, std::string> getNetplayNames();
+  std::unordered_map<u8, std::string> GetNetplayNames();
 
-  std::vector<u8> playbackSavestatePayload;
-  std::vector<u8> geckoList;
+  std::vector<u8> m_playback_savestate_payload;
+  std::vector<u8> m_gecko_list;
 
-  u32 stallFrameCount = 0;
-  bool isConnectionStalled = false;
+  u32 m_stall_frame_count = 0;
+  bool m_connection_stalled = false;
 
   std::vector<u8> m_read_queue;
   std::unique_ptr<Slippi::SlippiGame> m_current_game = nullptr;
-  SlippiSpectateServer* m_slippiserver = nullptr;
-  SlippiMatchmaking::MatchSearchSettings lastSearch;
+  SlippiSpectateServer* m_slippi_server = nullptr;
+  SlippiMatchmaking::MatchSearchSettings m_last_search;
 
-  std::vector<u16> stagePool;
+  std::vector<u16> m_stage_pool;
 
-  u32 frameSeqIdx = 0;
+  u32 m_frame_seq_idx = 0;
 
-  bool isEnetInitialized = false;
-  bool firstMatch = true;
+  bool m_enet_initialized = false;
+  bool m_first_match = true;
 
   std::default_random_engine generator;
 
-  std::string forcedError = "";
+  std::string m_forced_error = "";
 
   // Used to determine when to detect when a new session has started
-  bool is_play_session_active = false;
+  bool m_play_session_active = false;
 
   // Frame skipping variables
-  int framesToSkip = 0;
-  bool isCurrentlySkipping = false;
+  int m_frames_to_skip = 0;
+  bool m_currently_skipping = false;
 
 protected:
   void TransferByte(u8& byte) override;
 
 private:
-  SlippiPlayerSelections localSelections;
+  SlippiPlayerSelections m_local_selections;
 
-  std::unique_ptr<SlippiUser> user;
-  std::unique_ptr<SlippiGameFileLoader> gameFileLoader;
-  std::unique_ptr<SlippiNetplayClient> slippi_netplay;
-  std::unique_ptr<SlippiMatchmaking> matchmaking;
-  std::unique_ptr<SlippiGameReporter> game_reporter;
+  std::unique_ptr<SlippiUser> m_user;
+  std::unique_ptr<SlippiGameFileLoader> m_game_file_loader;
+  std::unique_ptr<SlippiNetplayClient> m_slippi_netplay;
+  std::unique_ptr<SlippiMatchmaking> m_matchmaking;
+  std::unique_ptr<SlippiGameReporter> m_game_reporter;
 
-  std::map<s32, std::unique_ptr<SlippiSavestate>> activeSavestates;
-  std::deque<std::unique_ptr<SlippiSavestate>> availableSavestates;
+  std::map<s32, std::unique_ptr<SlippiSavestate>> m_active_savestates;
+  std::deque<std::unique_ptr<SlippiSavestate>> m_available_savestates;
 };
 }  // namespace ExpansionInterface
