@@ -51,7 +51,6 @@
 #include "Core/Host.h"
 #include "Core/Movie.h"
 
-
 #include "InputCommon/ControllerInterface/ControllerInterface.h"
 
 #include "VideoCommon/AbstractFramebuffer.h"
@@ -88,11 +87,11 @@
 #include "VideoCommon/XFMemory.h"
 
 #ifdef IS_PLAYBACK
-#include "Core/Slippi/SlippiReplayComm.h"
 #include "Core/Slippi/SlippiPlayback.h"
+#include "Core/Slippi/SlippiReplayComm.h"
 
-extern std::unique_ptr<SlippiPlaybackStatus> g_playbackStatus;
-extern std::unique_ptr<SlippiReplayComm> g_replayComm;
+extern std::unique_ptr<SlippiPlaybackStatus> g_playback_status;
+extern std::unique_ptr<SlippiReplayComm> g_replay_comm;
 #endif
 
 std::unique_ptr<Renderer> g_renderer;
@@ -921,10 +920,16 @@ bool Renderer::InitializeImGui()
 #ifdef IS_PLAYBACK
   ImFontConfig config;
   config.MergeMode = true;
-  ImGui::GetIO().Fonts->AddFontFromFileTTF((File::GetSysDirectory() + "Resources/Roboto-Medium.ttf").c_str(), 28.0f, 0, ImGui::GetIO().Fonts->GetGlyphRangesDefault());
-  static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
-  ImFontConfig icons_config; icons_config.MergeMode = true; icons_config.PixelSnapH = true;
-  ImGui::GetIO().Fonts->AddFontFromFileTTF((File::GetSysDirectory() + "Resources/" + FONT_ICON_FILE_NAME_FA).c_str(), 32.0f, &icons_config, icons_ranges);
+  ImGui::GetIO().Fonts->AddFontFromFileTTF(
+      (File::GetSysDirectory() + "Resources/Roboto-Medium.ttf").c_str(), 28.0f, 0,
+      ImGui::GetIO().Fonts->GetGlyphRangesDefault());
+  static const ImWchar icons_ranges[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
+  ImFontConfig icons_config;
+  icons_config.MergeMode = true;
+  icons_config.PixelSnapH = true;
+  ImGui::GetIO().Fonts->AddFontFromFileTTF(
+      (File::GetSysDirectory() + "Resources/" + FONT_ICON_FILE_NAME_FA).c_str(), 32.0f,
+      &icons_config, icons_ranges);
 #endif
 
   // Don't create an ini file. TODO: Do we want this in the future?
@@ -1219,7 +1224,10 @@ void Renderer::UpdateWidescreenHeuristic()
   m_was_orthographically_anamorphic = ortho_looks_anamorphic;
 }
 
-void Renderer::Swap(u32 xfb_addr, u32 fb_width, u32 fb_stride, u32 fb_height, u64 ticks, float gamma, const MathUtil::Rectangle<int>& srcRect, const CopyFilterCoefficients::Values& filter_coefficients, float y_scale, bool clamp_top, bool clamp_bottom)
+void Renderer::Swap(u32 xfb_addr, u32 fb_width, u32 fb_stride, u32 fb_height, u64 ticks,
+                    float gamma, const MathUtil::Rectangle<int>& srcRect,
+                    const CopyFilterCoefficients::Values& filter_coefficients, float y_scale,
+                    bool clamp_top, bool clamp_bottom)
 {
   if (SConfig::GetInstance().bWii)
     m_is_game_widescreen = Config::Get(Config::SYSCONF_WIDESCREEN);
@@ -1244,10 +1252,11 @@ void Renderer::Swap(u32 xfb_addr, u32 fb_width, u32 fb_stride, u32 fb_height, u6
   {
     // Get the current XFB from texture cache
     MathUtil::Rectangle<int> xfb_rect;
-    const auto* xfb_entry =
-      g_texture_cache->GetXFBTexture(xfb_addr, fb_width, fb_height, fb_stride, &xfb_rect, gamma, srcRect, filter_coefficients, y_scale, clamp_top, clamp_bottom);
+    const auto* xfb_entry = g_texture_cache->GetXFBTexture(
+        xfb_addr, fb_width, fb_height, fb_stride, &xfb_rect, gamma, srcRect, filter_coefficients,
+        y_scale, clamp_top, clamp_bottom);
     if (xfb_entry &&
-      (!g_ActiveConfig.bSkipPresentingDuplicateXFBs || xfb_entry->id != m_last_xfb_id))
+        (!g_ActiveConfig.bSkipPresentingDuplicateXFBs || xfb_entry->id != m_last_xfb_id))
     {
       const bool is_duplicate_frame = xfb_entry->id == m_last_xfb_id;
       m_last_xfb_id = xfb_entry->id;
@@ -1255,14 +1264,16 @@ void Renderer::Swap(u32 xfb_addr, u32 fb_width, u32 fb_stride, u32 fb_height, u6
       // Since we use the common pipelines here and draw vertices if a batch is currently being
       // built by the vertex loader, we end up trampling over its pointer, as we share the buffer
       // with the loader, and it has not been unmapped yet. Force a pipeline flush to avoid this.
-      //g_vertex_manager->Flush();
+      // g_vertex_manager->Flush();
 
       // Render any UI elements to the draw list.
       {
         auto lock = GetImGuiLock();
 
 #ifdef IS_PLAYBACK
-        if (SConfig::GetInstance().m_slippiEnableSeek && g_replayComm->getSettings().rollbackDisplayMethod == "off" && g_playbackStatus->inSlippiPlayback)
+        if (SConfig::GetInstance().m_slippiEnableSeek &&
+            g_replay_comm->getSettings().rollbackDisplayMethod == "off" &&
+            g_playback_status->m_in_slippi_playback)
           OSD::DrawSlippiPlaybackControls();
 #endif
 
@@ -1276,7 +1287,7 @@ void Renderer::Swap(u32 xfb_addr, u32 fb_width, u32 fb_stride, u32 fb_height, u6
       BeginUtilityDrawing();
       if (!IsHeadless())
       {
-        BindBackbuffer({ {0.0f, 0.0f, 0.0f, 1.0f} });
+        BindBackbuffer({{0.0f, 0.0f, 0.0f, 1.0f}});
 
         if (!is_duplicate_frame)
           UpdateWidescreenHeuristic();
@@ -1287,7 +1298,7 @@ void Renderer::Swap(u32 xfb_addr, u32 fb_width, u32 fb_stride, u32 fb_height, u6
         auto render_target_rc = GetTargetRectangle();
         auto render_source_rc = xfb_rect;
         AdjustRectanglesToFitBounds(&render_target_rc, &render_source_rc, m_backbuffer_width,
-          m_backbuffer_height);
+                                    m_backbuffer_height);
         RenderXFBToScreen(render_target_rc, xfb_entry->texture.get(), render_source_rc);
 
         DrawImGui();
@@ -1408,9 +1419,11 @@ void Renderer::Swap(u32 xfb_addr, u32 fb_width, u32 fb_stride, u32 fb_height, u6
         auto lock = GetImGuiLock();
 
 #ifdef IS_PLAYBACK
-        if (SConfig::GetInstance().m_slippiEnableSeek && g_replayComm->getSettings().rollbackDisplayMethod == "off" && g_playbackStatus->inSlippiPlayback)
+        if (SConfig::GetInstance().m_slippiEnableSeek &&
+            g_replay_comm->getSettings().rollbackDisplayMethod == "off" &&
+            g_playback_status->m_in_slippi_playback)
           OSD::DrawSlippiPlaybackControls();
-#else 
+#else
         DrawDebugText();
         OSD::DrawMessages();
 #endif

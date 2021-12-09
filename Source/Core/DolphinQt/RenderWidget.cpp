@@ -20,17 +20,17 @@
 #include <QTimer>
 #include <QWindow>
 
-//test ui stuff
-#include <QVBoxLayout>
+// test ui stuff
 #include <QPushButton>
+#include <QVBoxLayout>
 
 #include "imgui.h"
 
 #include "Core/Config/MainSettings.h"
 #include "Core/ConfigManager.h"
 #include "Core/Core.h"
-#include "Core/State.h"
 #include "Core/Slippi/SlippiPlayback.h"
+#include "Core/State.h"
 
 #include "DolphinQt/Host.h"
 #include "DolphinQt/QtUtils/ModalMessageBox.h"
@@ -42,7 +42,7 @@
 #include "VideoCommon/VertexShaderManager.h"
 #include "VideoCommon/VideoConfig.h"
 
-extern std::unique_ptr<SlippiPlaybackStatus> g_playbackStatus;
+extern std::unique_ptr<SlippiPlaybackStatus> g_playback_status;
 
 RenderWidget::RenderWidget(QWidget* parent) : QWidget(parent)
 {
@@ -366,5 +366,5 @@ void RenderWidget::Exit()
 
 void RenderWidget::PlaybackSeek()
 {
-  g_playbackStatus->seekToFrame();
+  g_playback_status->SeekToFrame();
 }
