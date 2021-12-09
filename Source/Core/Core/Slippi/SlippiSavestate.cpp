@@ -14,7 +14,7 @@
 #include "Core/HW/VideoInterface.h"
 #include "Core/PowerPC/PowerPC.h"
 
-bool SlippiSavestate::shouldForceInit;
+bool SlippiSavestate::should_force_init;
 
 SlippiSavestate::SlippiSavestate()
 {

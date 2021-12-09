@@ -26,7 +26,7 @@ public:
   void Capture();
   void Load(std::vector<PreserveBlock> blocks);
 
-  static bool shouldForceInit;
+  static bool should_force_init;
 
 private:
   typedef struct
