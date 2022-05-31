@@ -225,7 +225,6 @@ void SConfig::SaveCoreSettings(IniFile& ini)
   core->Set("AgpCartBPath", m_strGbaCartB);
   core->Set("BlockingPipes", m_blockingPipes);
   core->Set("SlotA", m_EXIDevice[0]);
-  core->Set("SlotB", m_EXIDevice[1]);
   core->Set("SerialPort1", m_EXIDevice[2]);
   core->Set("BBA_MAC", m_bba_mac);
   core->Set("BBA_XLINK_IP", m_bba_xlink_ip);

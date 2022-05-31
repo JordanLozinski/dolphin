@@ -34,7 +34,6 @@
 enum
 {
   SLOT_A_INDEX,
-  SLOT_B_INDEX,
   SLOT_SP1_INDEX,
   SLOT_COUNT
 };
@@ -96,7 +95,6 @@ void GameCubePane::CreateWidgets()
         std::make_pair(tr("Microphone"), ExpansionInterface::EXIDEVICE_MIC)})
   {
     m_slot_combos[0]->addItem(entry.first, entry.second);
-    m_slot_combos[1]->addItem(entry.first, entry.second);
   }
 
   // Add SP1 devices
@@ -108,18 +106,15 @@ void GameCubePane::CreateWidgets()
         std::make_pair(tr("Broadband Adapter (XLink Kai)"),
                        ExpansionInterface::EXIDEVICE_ETHXLINK)})
   {
-    m_slot_combos[2]->addItem(entry.first, entry.second);
+    m_slot_combos[1]->addItem(entry.first, entry.second);
   }
 
   device_layout->addWidget(new QLabel(tr("Slot A:")), 0, 0);
   device_layout->addWidget(m_slot_combos[0], 0, 1);
   device_layout->addWidget(m_slot_buttons[0], 0, 2);
-  device_layout->addWidget(new QLabel(tr("Slot B:")), 1, 0);
+  device_layout->addWidget(new QLabel(tr("SP1:")), 1, 0);
   device_layout->addWidget(m_slot_combos[1], 1, 1);
   device_layout->addWidget(m_slot_buttons[1], 1, 2);
-  device_layout->addWidget(new QLabel(tr("SP1:")), 2, 0);
-  device_layout->addWidget(m_slot_combos[2], 2, 1);
-  device_layout->addWidget(m_slot_buttons[2], 2, 2);
 
   layout->addWidget(ipl_box);
   layout->addWidget(device_box);
@@ -155,7 +150,6 @@ void GameCubePane::UpdateButton(int slot)
   switch (slot)
   {
   case SLOT_A_INDEX:
-  case SLOT_B_INDEX:
     has_config =
         (value == ExpansionInterface::EXIDEVICE_MEMORYCARD ||
          value == ExpansionInterface::EXIDEVICE_AGP || value == ExpansionInterface::EXIDEVICE_MIC);
@@ -237,24 +231,6 @@ void GameCubePane::OnConfigPressed(int slot)
             tr("The file\n%1\nis either corrupted or not a GameCube memory card file.\n%2")
                 .arg(filename)
                 .arg(GCMemcardManager::GetErrorMessagesForErrorCode(error_code)));
-        return;
-      }
-    }
-
-    bool other_slot_memcard =
-        m_slot_combos[slot == SLOT_A_INDEX ? SLOT_B_INDEX : SLOT_A_INDEX]->currentData().toInt() ==
-        ExpansionInterface::EXIDEVICE_MEMORYCARD;
-    if (other_slot_memcard)
-    {
-      QString path_b =
-          QFileInfo(QString::fromStdString(slot == 0 ? Config::Get(Config::MAIN_MEMCARD_B_PATH) :
-                                                       Config::Get(Config::MAIN_MEMCARD_A_PATH)))
-              .absoluteFilePath();
-
-      if (path_abs == path_b)
-      {
-        ModalMessageBox::critical(this, tr("Error"),
-                                  tr("The same file can't be used in both slots."));
         return;
       }
     }
@@ -378,9 +354,6 @@ void GameCubePane::SaveSettings()
     {
     case SLOT_A_INDEX:
       Config::SetBaseOrCurrent(Config::MAIN_SLOT_A, dev);
-      break;
-    case SLOT_B_INDEX:
-      Config::SetBaseOrCurrent(Config::MAIN_SLOT_B, dev);
       break;
     case SLOT_SP1_INDEX:
       Config::SetBaseOrCurrent(Config::MAIN_SERIAL_PORT_1, dev);
