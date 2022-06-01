@@ -181,7 +181,6 @@ void SlippiUser::OpenLogInPage()
 bool SlippiUser::UpdateApp()
 {
 #if defined(__APPLE__) || defined(_WIN32)
-
   CriticalAlertT("Dolphin auto updates are not available on standalone builds. Migrate to "
                  "the Slippi Launcher at your earliest convenience");
   return false;
