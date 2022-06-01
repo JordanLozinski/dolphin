@@ -338,18 +338,21 @@ void GameCubePane::SaveSettings()
   {
     const auto dev = ExpansionInterface::TEXIDevices(m_slot_combos[i]->currentData().toInt());
 
-    if (Core::IsRunning() && SConfig::GetInstance().m_EXIDevice[i] != dev)
+    // m_EXIDevice = {SLOT A, SLOT B, SP 1}. SLOT B is reserved for Slippi's EXI device.
+    int exi_device_index = (i == 1) ? 2 : 0;
+
+    if (Core::IsRunning() && SConfig::GetInstance().m_EXIDevice[exi_device_index] != dev)
     {
       ExpansionInterface::ChangeDevice(
-          // SlotB is on channel 1, slotA and SP1 are on 0
-          (i == 1) ? 1 : 0,
+          // slotA and SP1 are both on 0
+          0, 
           // The device enum to change to
           dev,
           // SP1 is device 2, slots are device 0
-          (i == 2) ? 2 : 0);
+          (exi_device_index == 2) ? 2 : 0);
     }
 
-    SConfig::GetInstance().m_EXIDevice[i] = dev;
+    SConfig::GetInstance().m_EXIDevice[exi_device_index] = dev;
     switch (i)
     {
     case SLOT_A_INDEX:
