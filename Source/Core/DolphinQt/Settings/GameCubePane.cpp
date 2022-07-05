@@ -34,7 +34,6 @@
 enum
 {
   SLOT_A_INDEX,
-  SLOT_SP1_INDEX,
   SLOT_COUNT
 };
 
@@ -97,24 +96,10 @@ void GameCubePane::CreateWidgets()
     m_slot_combos[0]->addItem(entry.first, entry.second);
   }
 
-  // Add SP1 devices
-
-  for (const auto& entry :
-       {std::make_pair(tr("<Nothing>"), ExpansionInterface::EXIDEVICE_NONE),
-        std::make_pair(tr("Dummy"), ExpansionInterface::EXIDEVICE_DUMMY),
-        std::make_pair(tr("Broadband Adapter (TAP)"), ExpansionInterface::EXIDEVICE_ETH),
-        std::make_pair(tr("Broadband Adapter (XLink Kai)"),
-                       ExpansionInterface::EXIDEVICE_ETHXLINK)})
-  {
-    m_slot_combos[1]->addItem(entry.first, entry.second);
-  }
 
   device_layout->addWidget(new QLabel(tr("Slot A:")), 0, 0);
   device_layout->addWidget(m_slot_combos[0], 0, 1);
   device_layout->addWidget(m_slot_buttons[0], 0, 2);
-  device_layout->addWidget(new QLabel(tr("SP1:")), 1, 0);
-  device_layout->addWidget(m_slot_combos[1], 1, 1);
-  device_layout->addWidget(m_slot_buttons[1], 1, 2);
 
   layout->addWidget(ipl_box);
   layout->addWidget(device_box);
@@ -153,10 +138,6 @@ void GameCubePane::UpdateButton(int slot)
     has_config =
         (value == ExpansionInterface::EXIDEVICE_MEMORYCARD ||
          value == ExpansionInterface::EXIDEVICE_AGP || value == ExpansionInterface::EXIDEVICE_MIC);
-    break;
-  case SLOT_SP1_INDEX:
-    has_config = (value == ExpansionInterface::EXIDEVICE_ETH ||
-                  value == ExpansionInterface::EXIDEVICE_ETHXLINK);
     break;
   }
 
@@ -344,12 +325,12 @@ void GameCubePane::SaveSettings()
     if (Core::IsRunning() && SConfig::GetInstance().m_EXIDevice[exi_device_index] != dev)
     {
       ExpansionInterface::ChangeDevice(
-          // slotA and SP1 are both on 0
+          // slotA is on 0
           0, 
           // The device enum to change to
           dev,
-          // SP1 is device 2, slots are device 0
-          (exi_device_index == 2) ? 2 : 0);
+          // memcard slots are device 0
+          0);
     }
 
     SConfig::GetInstance().m_EXIDevice[exi_device_index] = dev;
@@ -357,9 +338,6 @@ void GameCubePane::SaveSettings()
     {
     case SLOT_A_INDEX:
       Config::SetBaseOrCurrent(Config::MAIN_SLOT_A, dev);
-      break;
-    case SLOT_SP1_INDEX:
-      Config::SetBaseOrCurrent(Config::MAIN_SERIAL_PORT_1, dev);
       break;
     }
   }
